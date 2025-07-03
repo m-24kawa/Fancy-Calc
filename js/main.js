@@ -1,0 +1,635 @@
+'use strict';
+{
+  function DelStr2(strLen,ix,iy) {
+    const canvas = document.querySelector('canvas');
+    if (typeof canvas.getContext === 'undefined') {
+      return;
+    }
+    const ctx = canvas.getContext('2d');
+
+    // 文字列削除処理（一括）
+     ctx.beginPath();
+     ctx.moveTo(ix-1,iy);
+     ctx.lineTo(ix-1+(strLen)*55, iy);
+     ctx.lineTo(ix+(strLen)*55-8, iy+75);
+     ctx.lineTo(ix-8, iy+74);
+     ctx.lineTo.closePath;
+     ctx.fillStyle = '#aaa';
+     ctx.fill();
+     ctx.beginPath();
+     ctx.moveTo(ix-19,iy+64);
+     ctx.lineTo(ix-8, iy+64);
+     ctx.lineTo(ix-8, iy+74);
+     ctx.lineTo(ix-19, iy+74);
+     ctx.lineTo.closePath;
+     ctx.fillStyle = '#aaa';
+     ctx.fill();
+  }
+
+  function putStr2(tgtStr,ix,iy) {
+    const canvas = document.querySelector('canvas');
+    if (typeof canvas.getContext === 'undefined') {
+      return;
+    }
+    const ctx = canvas.getContext('2d');
+
+    // 文字列削除処理（一括）
+    //  ctx.beginPath();
+    //  ctx.moveTo(ix,iy);
+    //  ctx.lineTo(ix+(tgtStr.length)*55, iy);
+    //  ctx.lineTo(ix+(tgtStr.length)*55-7, iy+75);
+    //  ctx.lineTo(ix-7, iy+75);
+    //  ctx.lineTo.closePath;
+    //  ctx.fillStyle = '#aaa';
+    //  ctx.fill();
+
+    // 文字列描画処理
+    for (let cnt=0;cnt<tgtStr.length;cnt++){
+      //console.log(cnt,tgtStr[cnt]);
+      if (tgtStr[cnt]===':'){
+        putChar_2D(ctx, ix + cnt * 55, iy);
+      }
+      if (tgtStr[cnt]==='.'){
+        putChar_2E(ctx, ix + cnt * 55, iy);
+      }
+      if (tgtStr[cnt]==='-'){
+        putChar_3A(ctx, ix + cnt * 55, iy);
+      } 
+      if (tgtStr[cnt]==='E'){
+        putChar_45(ctx, ix + cnt * 55, iy);
+      } 
+      if (tgtStr[cnt]==='o'){
+        putChar_6F(ctx, ix + cnt * 55, iy);
+      } 
+      if (tgtStr[cnt]==='r'){
+        putChar_72(ctx, ix + cnt * 55, iy);
+      } 
+      if (tgtStr[cnt]==='^'){
+        putChar_5E(ctx, ix + cnt * 55, iy);
+      }
+      if (tgtStr[cnt]>='0' && tgtStr[cnt]<='9'){
+        let tgtNum = tgtStr.charCodeAt(cnt) - 0x30;
+        //console.log(cnt,tgtStr[cnt],tgtNum);
+        putNum(ctx, tgtNum, ix + cnt * 55, iy);
+      }
+    }
+  } // end of function putStr2
+
+  // Colonの描画
+  function putChar_2D(ctx, x, y) {
+    ctx.beginPath();
+    ctx.moveTo(x+14,y+16);
+    ctx.lineTo(x+24,y+16);
+    ctx.lineTo(x+23,y+26);
+    ctx.lineTo(x+13,y+26);
+    ctx.lineTo.closePath;
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x+11,y+48);
+    ctx.lineTo(x+21,y+48);
+    ctx.lineTo(x+20,y+58);
+    ctx.lineTo(x+10,y+58);
+    ctx.lineTo.closePath;
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+  }
+  // Dotの描画
+  function putChar_2E(ctx, x, y) {
+    ctx.beginPath();
+    //ctx.moveTo(x-5,y+64);
+    //ctx.lineTo(x+5,y+64);
+    //ctx.lineTo(x+4,y+74);
+    //ctx.lineTo(x-6,y+74);
+    ctx.moveTo(x-18,y+64);
+    ctx.lineTo(x-8,y+64);
+    ctx.lineTo(x-9,y+74);
+    ctx.lineTo(x-19,y+74);
+    ctx.lineTo.closePath;
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+  }
+    // マイナスの描画
+  function putChar_3A(ctx, x, y) {
+    drawHSeg(ctx,x+2,y+37);
+  }
+    // アンダースコアの描画(^で代用)
+  function putChar_5E(ctx, x, y) {
+    drawHSeg(ctx,x-1,y+69);
+  }
+    // Eの描画(E)
+  function putChar_45(ctx, x, y) {
+    var BitSeg= 0x6d;
+    drawNum(ctx,BitSeg,x,y);
+  }
+    // oの描画(o)
+  function putChar_6F(ctx, x, y) {
+    var BitSeg= 0x0f;
+    drawNum(ctx,BitSeg,x,y);
+  }
+    // rの描画(r)
+  function putChar_72(ctx, x, y) {
+    var BitSeg= 0x0c;
+    drawNum(ctx,BitSeg,x,y);
+  }
+  function putNum(ctx, Num, x, y){
+    // 0～9描画時、各セグメントのON/OFF情報をビットに置き換えた配列
+    var BitSegs = [0x77, 0x12, 0x5d, 0x5b, 0x3a, 0x6b, 0x6f, 0x72, 0x7f, 0x7b];
+    //console.log('Num : BitSeg',Num,BitSegs[Num]);
+    drawNum( ctx, BitSegs[Num],x,y);
+  }
+  
+  function drawNum(ctx, bitInfo,ix,iy){
+    var BitChk = [0x00, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01];
+    var SegOffsetX = [null, 5, 4, 36, 2, 1, 33, -1];
+    var SegOffsetY = [null, 5, 6, 6, 37, 38, 38, 69];
+    // for(let i=0; i<8; i++){
+    //   console.log(' Segment',bitInfo,i,(bitInfo & BitChk[i])!=0 );
+    // }
+    //セグメント１作成
+    if (bitInfo & BitChk[1]){
+      drawHSeg(ctx,ix+SegOffsetX[1],iy+SegOffsetY[1]);
+    }
+    //セグメント２作成
+    if (bitInfo & BitChk[2]){
+      drawVSeg(ctx,ix+SegOffsetX[2],iy+SegOffsetY[2]);
+    } 
+    //セグメント３作成
+    if (bitInfo & BitChk[3]){
+      drawVSeg(ctx,ix+SegOffsetX[3],iy+SegOffsetY[3]);
+    } 
+    //セグメント４作成
+    if (bitInfo & BitChk[4]){
+      drawHSeg(ctx,ix+SegOffsetX[4],iy+SegOffsetY[4]);
+    } 
+    //セグメント５作成
+    if (bitInfo & BitChk[5]){
+      drawVSeg(ctx,ix+SegOffsetX[5],iy+SegOffsetY[5]);
+    } 
+    //セグメント６作成
+    if (bitInfo & BitChk[6]){
+      drawVSeg(ctx,ix+SegOffsetX[6],iy+SegOffsetY[6]);
+    } 
+    //セグメント７作成
+    if (bitInfo & BitChk[7]){
+      drawHSeg(ctx,ix+SegOffsetX[7],iy+SegOffsetY[7]);
+    }
+  }
+
+  function drawHSeg(ctx,ix,iy) {
+    ctx.beginPath();
+    ctx.moveTo(ix,iy);
+    ctx.lineTo(ix+5,iy-5);
+    ctx.lineTo(ix+25,iy-5);
+    ctx.lineTo(ix+30,iy);
+    ctx.lineTo(ix+25,iy+5);
+    ctx.lineTo(ix+5,iy+5);
+    ctx.lineTo.closePath;
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+  } 
+  function drawVSeg(ctx,ix,iy) {
+    ctx.beginPath();
+    ctx.moveTo(ix,iy);
+    ctx.lineTo(ix+5,iy+5);
+    ctx.lineTo(ix+3,iy+24);
+    ctx.lineTo(ix-2,iy+29);
+    ctx.lineTo(ix-7,iy+25);
+    ctx.lineTo(ix-5,iy+5);
+    ctx.lineTo.closePath;
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+  } 
+  
+  var scrnMode = 0;
+  var strBuff = ''; // 入力文字列バッファ
+  var numLen = 0;   // 桁数(.除く)
+  var dotpos = -1;  // .位置
+  var Value_1 = 0;  // 引数１
+  var Value_2 = 0;        // 引数２
+  var oprFlg = 0;         // 演算子フラグ（なし、加、減、乗、除）
+  
+  function setBuff(){
+      var strBuff_1 = '';
+      if (dotpos >0){
+        strBuff_1= strBuff.substring(0,dotpos) + '.' + strBuff.substring(dotpos,strBuff.length);
+      }else{
+        strBuff_1 = strBuff + '.';
+      }  
+      if (scrnMode <= 2) {
+        Value_1 = parseFloat(strBuff_1); // 引数１に設定
+      }else{
+        Value_2 = parseFloat(strBuff_1); // 引数２に設定
+      }
+      showVal();  
+  }
+
+  function showVal(){
+    var val_0 = 0;
+    if (scrnMode <= 2) {
+      val_0 = Value_1; // 表示対象：引数１
+    } else {
+      val_0 = Value_2;  // 表示対象：引数２
+    }
+    showValue(val_0); // 数値表示
+  }
+  function showValue(val_x) {
+    var maxLen; // 表示桁数
+    let allLen = parseFloat(val_x).toString().length; // 全桁数
+    if (allLen > 10){ 
+        maxLen=10;  // 表示桁の上限10桁
+    }else {
+        maxLen=allLen;
+    }
+    let intLen = parseInt(val_x).toString().length; // 整数部桁数
+    let intUnder = maxLen - intLen;
+    let valStr_0 = val_x.toFixed(intUnder);  // 数値を文字に変換(最後の桁で丸め)
+    let valStr_1 = valStr_0.replace('.',''); // 小数点なし
+    let dotStr = '';
+    const charSpc = ' ';
+    dotpos= valStr_0.indexOf('.');
+      if (dotpos>0) {
+            dotStr = charSpc.repeat(dotpos)+'.';
+      }else {
+          dotStr = charSpc.repeat(valStr_0.length)+'.';
+      }
+      DelStr2(10,25,50);  // 10桁表示を削除
+      putStr2(dotStr,25,50);
+      putStr2(valStr_1,25,50);
+  }
+  function showStr(Str_0){
+    console.log('strBuff',Str_0);
+    DelStr2(10,25,50);  // 10桁表示を削除
+    const charSpc = ' ';  // 半角スペース
+    if (dotpos>=0) {
+      let dotStr= charSpc.repeat(dotpos)+'.';
+      putStr2(dotStr,25,50);
+    }
+    if ((scrnMode === 1 || scrnMode === 3) &&(numLen<10)){  
+      putStr2(Str_0 + '^',25,50); // 末尾にアンダースコアを付加
+    }else{
+      putStr2(Str_0,25,50);  
+    }
+  }
+  function showError(num_0){
+    DelStr2(10,25,50);  // 10桁表示を削除
+    let ErrString = 'Error'+String(num_0).padStart(2,'0'); // エラーコードを2桁表示に 
+    putStr2(ErrString,25,50); 
+  }
+  function InitBuff() {
+      strBuff = '';
+      numLen = 0;
+      dotpos = -1;
+  }
+  function calcVal() { // 演算子フラグに応じて演算を行う
+      if (oprFlg === 1){
+          Value_1 = Value_1 + Value_2; // 加算
+      }else if(oprFlg===2){
+          Value_1 = Value_1 - Value_2; // 減算
+      }else if (oprFlg===3){
+          Value_1 = Value_1 * Value_2; // 乗算
+      }else if (oprFlg===4){
+          if(Value_2 !==0){
+            Value_1 = Value_1 / Value_2; // 除算
+          }else {
+            return(11); // エラー
+          }
+      }
+      return(0); //演算成功
+  }
+
+  // ボタン要素取得(表示)
+  const buttonElement_C = document.getElementById('btn_C');
+  const buttonElement_7 = document.getElementById('btn_7');      
+  const buttonElement_4 = document.getElementById('btn_4');      
+  const buttonElement_1 = document.getElementById('btn_1');      
+  const buttonElement_0 = document.getElementById('btn_0');      
+
+  const buttonElement_BS = document.getElementById('btn_BS');
+  const buttonElement_8 = document.getElementById('btn_8');      
+  const buttonElement_5 = document.getElementById('btn_5');      
+  const buttonElement_2 = document.getElementById('btn_2');      
+  const buttonElement_DOT = document.getElementById('btn_DOT');      
+
+  const buttonElement_SQR = document.getElementById('btn_SQR');
+  const buttonElement_9 = document.getElementById('btn_9');      
+  const buttonElement_6 = document.getElementById('btn_6');      
+  const buttonElement_3 = document.getElementById('btn_3');      
+  const buttonElement_PLMI = document.getElementById('btn_PLMI');
+
+  const buttonElement_DIV = document.getElementById('btn_DIV');      
+  const buttonElement_MUL = document.getElementById('btn_MUL');      
+  const buttonElement_MNS = document.getElementById('btn_MNS');      
+  const buttonElement_PLS = document.getElementById('btn_PLS');      
+  const buttonElement_EQ  = document.getElementById('btn_EQ');      
+
+  showVal();
+
+ buttonElement_C.addEventListener('click',() => {
+    strBuff = '';
+    numLen =0;
+    dotpos = -1;
+    oprFlg=0;
+    Value_1 =0;
+    Value_2 =0;
+    showVal();
+    scrnMode = 0;
+ });  
+ buttonElement_7.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '7';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_4.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '4';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_1.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '1';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_0.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '0';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_BS.addEventListener('click',() => {
+   if (scrnMode === 1 || scrnMode === 3){
+        if (numLen === dotpos) {
+          dotpos = -1; // 小数点位置をリセット
+        }else{
+          strBuff = strBuff.slice(0, -1); // 最後の文字を削除
+          numLen--;
+        }
+        if (numLen === 0) {
+          scrnMode--;
+          showVal(); 
+        }else{
+          showStr(strBuff);
+        }  
+   }
+ });  
+ buttonElement_8.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '8';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_5.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '5';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_2.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '2';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_DOT.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   if (dotpos < 0){
+      dotpos = numLen;
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_SQR.addEventListener('click',() => {
+    if (scrnMode ===1 || scrnMode===3) {
+        setBuff(strBuff);
+        scrnMode++;
+    }
+    if (scrnMode >= 4) {
+        if (Value_2 >= 0) {
+          Value_2 = Math.sqrt(Value_2);
+        } else {
+            showError(12); // エラー表示;
+            scrnMode=0; 
+            return; 
+        }
+    } else {
+        if (Value_1 >= 0) {
+          Value_1 = Math.sqrt(Value_1);
+        } else {
+          showError(12); // エラー表示;
+          scrnMode=0; 
+          return;
+        }
+    }
+    showVal();
+ });  
+ buttonElement_9.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '9';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_6.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '6';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_3.addEventListener('click',() => {
+   if (scrnMode === 0 || scrnMode === 2){
+      InitBuff();
+      scrnMode++;
+   }
+   strBuff = strBuff + '3';
+   numLen++;
+   if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
+      setBuff(strBuff);
+      if (oprFlg > 0) scrnMode++;
+      else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
+   }else{
+      showStr(strBuff);
+   }
+ });  
+ buttonElement_PLMI.addEventListener('click',() => {
+    if (scrnMode ===1 || scrnMode===3) {
+        setBuff(strBuff);
+        scrnMode++;
+    }
+    if (scrnMode >= 4) {
+        Value_2 = -Value_2; // 引数２の符号を反転
+    } else {
+        Value_1 = -Value_1; // 引数１の符号を反転
+    }
+    showVal();
+ });
+ buttonElement_DIV.addEventListener('click',() => {
+    if (scrnMode ===1 || scrnMode===3) {
+        setBuff(strBuff);
+    }
+    if (scrnMode >=3 ){
+        let errFlg=calcVal();
+        if (errFlg > 0) {
+          showError(errFlg); // エラー表示
+          scrnMode=0;
+          return;
+        }else{
+          showValue(Value_1); //必ずValue_1を表示する
+        }
+    }
+    scrnMode=2;
+    oprFlg=4; // 除算
+ });
+ buttonElement_MUL.addEventListener('click',() => {
+    if (scrnMode ===1 || scrnMode===3) {
+        setBuff(strBuff);
+    }
+    if (scrnMode >=3){
+        let errFlg=calcVal();
+        if (errFlg > 0) {
+          showError(errFlg); // エラー表示
+          scrnMode=0;
+          return;
+        }else{
+          showValue(Value_1); //必ずValue_1を表示する
+        }
+    }
+    scrnMode=2;
+    oprFlg=3;  // 乗算
+});
+ buttonElement_MNS.addEventListener('click',() => {
+    if (scrnMode ===1 || scrnMode===3) {
+        setBuff(strBuff);
+    }
+    if (scrnMode >=3){
+        let errFlg=calcVal();
+        if (errFlg > 0) {
+          showError(errFlg); // エラー表示
+          scrnMode=0;
+          return;
+        }else{
+          showValue(Value_1); //必ずValue_1を表示する
+        }
+    }
+    scrnMode=2;
+    oprFlg=2; // 減算
+ });
+ buttonElement_PLS.addEventListener('click',() => {
+     if (scrnMode ===1 || scrnMode===3) {
+        setBuff(strBuff);
+    }
+    if (scrnMode >=3){
+        let errFlg=calcVal();
+        if (errFlg > 0) {
+          showError(errFlg); // エラー表示
+          scrnMode=0;
+          return;
+        }else{
+          showValue(Value_1); //必ずValue_1を表示する
+        }
+    }
+    scrnMode=2;
+    oprFlg=1; // 加算
+ });
+ buttonElement_EQ.addEventListener('click',() => {
+    if (scrnMode ===1 || scrnMode===3) {
+        setBuff(strBuff);
+    }
+    if (oprFlg > 0){
+        let errFlg=calcVal();
+        if (errFlg > 0) {
+          showError(errFlg); // エラー表示
+          scrnMode=0;
+          return;
+        }else{
+          showValue(Value_1); //必ずValue_1を表示する
+        }
+    }
+    scrnMode=2;
+});
+
+}

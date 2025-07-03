@@ -1,0 +1,25 @@
+body {
+  background: #222;
+}
+canvas {
+  background: #aaa;
+}
+.container {
+  width : 600px;
+  display: flex;
+  flex-direction:row;
+  justify-content: space-between;
+}
+.sub-container {
+  width: 150px;
+  display:inline-block;
+}
+button {
+  width: 140px;
+  height: 60px;
+  border-radius: 15%;
+  font-size: 32px;
+  font-weight: bold;
+  background-color: #ccc;
+  margin-bottom: 5px;
+}
