@@ -1,4 +1,4 @@
 # Fancy Calc
-## CALCULATER Demonstration
+## CALCULATOR Demonstration
 - Designed by Masahiro Nishikawa
 - Credit : Dotinstall.com
