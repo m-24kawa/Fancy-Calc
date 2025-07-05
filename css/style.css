@@ -16,10 +16,37 @@ canvas {
 }
 button {
   width: 140px;
-  height: 60px;
+  height: 90px;
   border-radius: 15%;
-  font-size: 32px;
+  font-size: 48px;
   font-weight: bold;
-  background-color: #ccc;
-  margin-bottom: 5px;
+  background-color: #eee;
+  margin-bottom: 10px;
+}
+
+#btn_C {
+  background-color: #fcc
+}
+#btn_BS {
+  background-color: #add}
+#btn_SQR {
+  background-color: #add
+}
+#btn_DIV {
+  background-color: #eec
+}
+#btn_MUL {
+  background-color: #eec
+}
+#btn_MNS {
+  background-color: #eec
+}
+#btn_PLS {
+  background-color: #eec
+}
+#btn_PLMI {
+  background-color: #bdb
+}
+#btn_EQ {
+  background-color: #cfa
 }

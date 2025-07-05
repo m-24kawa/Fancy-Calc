@@ -211,7 +211,7 @@
   
   function setBuff(){
       var strBuff_1 = '';
-      if (dotpos >0){
+      if (dotpos >=0){
         strBuff_1= strBuff.substring(0,dotpos) + '.' + strBuff.substring(dotpos,strBuff.length);
       }else{
         strBuff_1 = strBuff + '.';
@@ -234,16 +234,35 @@
     showValue(val_0); // 数値表示
   }
   function showValue(val_x) {
-    var maxLen; // 表示桁数
-    let allLen = parseFloat(val_x).toString().length; // 全桁数
-    if (allLen > 10){ 
-        maxLen=10;  // 表示桁の上限10桁
-    }else {
-        maxLen=allLen;
-    }
+    // 事前処理：小数点10桁未満の端数はあらかじめ切り捨てる
+    val_x = Math.round(val_x * 1e10) / 1e10;
+
+    var Ceiling = 10; // 表示桁の上限
+    var maxLen; // 必要桁数
+    let allLen = val_x.toString().length; // 全桁数
     let intLen = parseInt(val_x).toString().length; // 整数部桁数
+    console.log ('int_val_x',parseInt(val_x),'int_val_x.toString()',parseInt(val_x).toString());
+    if (allLen !== intLen) { // 小数点付きの場合
+        allLen = allLen -1;
+      if (val_x < 1 && val_x > -1) { // 整数部が0のみの場合
+        Ceiling = Ceiling -1;    
+        allLen = allLen -1; 
+      }
+    }
+    if (val_x < 0){ // 符号付きの場合
+        Ceiling = Ceiling -1;    
+        allLen = allLen -1;
+        intLen = intLen -1;
+    }
+    if (allLen > Ceiling) {
+        maxLen = Ceiling; 
+    } else {
+        maxLen = allLen; // 必要桁数
+    }
     let intUnder = maxLen - intLen;
-    let valStr_0 = val_x.toFixed(intUnder);  // 数値を文字に変換(最後の桁で丸め)
+    val_x = Math.round(val_x * Math.pow(10,intUnder))/Math.pow(10,intUnder); 
+    console.log ('val_x',val_x,'val_x.toString()',val_x.toString());
+    let valStr_0 = val_x.toString();  // 数値を文字に変換
     let valStr_1 = valStr_0.replace('.',''); // 小数点なし
     let dotStr = '';
     const charSpc = ' ';
@@ -271,16 +290,24 @@
       putStr2(Str_0,25,50);  
     }
   }
+ 
   function showError(num_0){
     DelStr2(10,25,50);  // 10桁表示を削除
     let ErrString = 'Error'+String(num_0).padStart(2,'0'); // エラーコードを2桁表示に 
     putStr2(ErrString,25,50); 
   }
-  function InitBuff() {
+  function InitBuff() { // 入力文字列バッファ初期化
       strBuff = '';
       numLen = 0;
       dotpos = -1;
   }
+  function InitAll() { // 全ての変数を初期化
+    InitBuff();
+    oprFlg=0;
+    Value_1 =0;
+    Value_2 =0;
+  }
+
   function calcVal() { // 演算子フラグに応じて演算を行う
       if (oprFlg === 1){
           Value_1 = Value_1 + Value_2; // 加算
@@ -295,7 +322,21 @@
             return(11); // エラー
           }
       }
-      return(0); //演算成功
+      let errFlg = ChkRange(Value_1); // 数値の範囲チェック
+      return(errFlg); //演算成功ならば0
+  }
+  function ChkRange(Val_0) { // 数値の範囲チェック
+    if (Val_0 <= -1e+9 || Val_0 >= 1e+10) {
+      return(1); 
+    }
+    if (Val_0 < 1e-9 && Val_0 > -1e-8) {
+      return(2);
+    }
+    if ((Val_0.toString().indexOf('e') >= 0) || (Val_0.toString().indexOf('E') >= 0)) {
+      return(3); // 指数表記エラー
+    }
+
+    return(0); // 表示範囲内
   }
 
   // ボタン要素取得(表示)
@@ -326,12 +367,7 @@
   showVal();
 
  buttonElement_C.addEventListener('click',() => {
-    strBuff = '';
-    numLen =0;
-    dotpos = -1;
-    oprFlg=0;
-    Value_1 =0;
-    Value_2 =0;
+    InitAll(); // 全ての変数を初期化
     showVal();
     scrnMode = 0;
  });  
@@ -488,6 +524,13 @@
           return;
         }
     }
+    let errFlg=ChkRange(Value_1);
+    if (errFlg > 0) {
+        showError(errFlg); // エラー表示
+        InitAll();
+        scrnMode=0;
+        return;
+    }
     showVal();
  });  
  buttonElement_9.addEventListener('click',() => {
@@ -555,6 +598,7 @@
         let errFlg=calcVal();
         if (errFlg > 0) {
           showError(errFlg); // エラー表示
+          InitAll();
           scrnMode=0;
           return;
         }else{
@@ -572,6 +616,7 @@
         let errFlg=calcVal();
         if (errFlg > 0) {
           showError(errFlg); // エラー表示
+          InitAll();
           scrnMode=0;
           return;
         }else{
@@ -589,6 +634,7 @@
         let errFlg=calcVal();
         if (errFlg > 0) {
           showError(errFlg); // エラー表示
+          InitAll();
           scrnMode=0;
           return;
         }else{
@@ -606,6 +652,7 @@
         let errFlg=calcVal();
         if (errFlg > 0) {
           showError(errFlg); // エラー表示
+          InitAll();
           scrnMode=0;
           return;
         }else{
@@ -623,6 +670,7 @@
         let errFlg=calcVal();
         if (errFlg > 0) {
           showError(errFlg); // エラー表示
+          InitAll();
           scrnMode=0;
           return;
         }else{
