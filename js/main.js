@@ -244,15 +244,15 @@
     console.log ('int_val_x',parseInt(val_x),'int_val_x.toString()',parseInt(val_x).toString());
     if (allLen !== intLen) { // 小数点付きの場合
         allLen = allLen -1;
-      if (val_x < 1 && val_x > -1) { // 整数部が0のみの場合
-        Ceiling = Ceiling -1;    
-        allLen = allLen -1; 
-      }
+      // if (val_x < 1 && val_x > -1) { // 整数部が0のみの場合
+      //   Ceiling = Ceiling -1;    
+      //   allLen = allLen -1; 
+      // }
     }
     if (val_x < 0){ // 符号付きの場合
         Ceiling = Ceiling -1;    
         allLen = allLen -1;
-        intLen = intLen -1;
+        // intLen = intLen -1;
     }
     if (allLen > Ceiling) {
         maxLen = Ceiling; 
