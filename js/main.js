@@ -240,28 +240,36 @@
     var Ceiling = 10; // 表示桁の上限
     var maxLen; // 必要桁数
     let allLen = val_x.toString().length; // 全桁数
-    let intLen = parseInt(val_x).toString().length; // 整数部桁数
-    console.log ('int_val_x',parseInt(val_x),'int_val_x.toString()',parseInt(val_x).toString());
-    if (allLen !== intLen) { // 小数点付きの場合
-        allLen = allLen -1;
-      // if (val_x < 1 && val_x > -1) { // 整数部が0のみの場合
-      //   Ceiling = Ceiling -1;    
-      //   allLen = allLen -1; 
-      // }
-    }
-    if (val_x < 0){ // 符号付きの場合
-        Ceiling = Ceiling -1;    
-        allLen = allLen -1;
-        // intLen = intLen -1;
-    }
-    if (allLen > Ceiling) {
-        maxLen = Ceiling; 
+    var intUnder; // 丸目桁数（小数点以下）
+    let dotpos_1 = val_x.toString().indexOf('.'); // 小数点位置
+    if (dotpos_1<0) { // 小数点がない場合は1の位で丸める
+      intUnder =0;
     } else {
-        maxLen = allLen; // 必要桁数
+      intUnder = allLen - dotpos_1 -1;
     }
-    let intUnder = maxLen - intLen;
+    // let intLen = parseInt(val_x).toString().length; // 整数部桁数
+    // console.log ('int_val_x',parseInt(val_x),'int_val_x.toString()',parseInt(val_x).toString());
+    // if (allLen !== intLen) { // 小数点付きの場合
+    //     allLen = allLen -1;
+    //   if (val_x < 1 && val_x > -1) { // 整数部が0のみの場合
+    //     Ceiling = Ceiling -1;    
+    //     allLen = allLen -1; 
+    //   }
+    // }
+    // if (val_x < 0){ // 符号付きの場合
+    //     Ceiling = Ceiling -1;    
+    //     allLen = allLen -1;
+    //     // intLen = intLen -1;
+    // }
+    // if (allLen > Ceiling) {
+    //     maxLen = Ceiling; 
+    // } else {
+    //     maxLen = allLen; // 必要桁数
+    // }
+    // let intUnder = maxLen - intLen;
     val_x = Math.round(val_x * Math.pow(10,intUnder))/Math.pow(10,intUnder); 
-    console.log ('val_x',val_x,'val_x.toString()',val_x.toString());
+    console.log ('val_x',val_x,'val_x.toString()',val_x.toString(),'丸め桁',intUnder);
+    
     let valStr_0 = val_x.toString();  // 数値を文字に変換
     let valStr_1 = valStr_0.replace('.',''); // 小数点なし
     let dotStr = '';
