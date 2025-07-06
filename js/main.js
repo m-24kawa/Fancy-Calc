@@ -237,8 +237,8 @@
     // 事前処理：小数点10桁未満の端数はあらかじめ切り捨てる
     val_x = Math.round(val_x * 1e10) / 1e10;
 
-    var Ceiling = 10; // 表示桁の上限
-    var maxLen; // 必要桁数
+    var Ceiling = 10; // 表示桁の下限
+    //var maxLen; // 必要桁数
     let allLen = val_x.toString().length; // 全桁数
     var intUnder; // 丸目桁数（小数点以下）
     let dotpos_1 = val_x.toString().indexOf('.'); // 小数点位置
@@ -247,8 +247,16 @@
     } else {
       intUnder = allLen - dotpos_1 -1;
     }
-    // let intLen = parseInt(val_x).toString().length; // 整数部桁数
-    // console.log ('int_val_x',parseInt(val_x),'int_val_x.toString()',parseInt(val_x).toString());
+    let intLen = parseInt(val_x).toString().length; // 整数部桁数
+    console.log ('int_val_x',parseInt(val_x),'int_val_x.toString()',parseInt(val_x).toString());
+    if (val_x < 0 &&  val_x > -1) { // 整数部が-0の場合
+     Ceiling = Ceiling - intLen - 1;      
+    } else {
+      Ceiling = Ceiling - intLen;
+    }
+    if (intUnder > Ceiling) { // 丸め桁を表示桁数の下限に設定
+      intUnder = Ceiling; 
+    }
     // if (allLen !== intLen) { // 小数点付きの場合
     //     allLen = allLen -1;
     //   if (val_x < 1 && val_x > -1) { // 整数部が0のみの場合
@@ -269,7 +277,7 @@
     // let intUnder = maxLen - intLen;
     val_x = Math.round(val_x * Math.pow(10,intUnder))/Math.pow(10,intUnder); 
     console.log ('val_x',val_x,'val_x.toString()',val_x.toString(),'丸め桁',intUnder);
-    
+
     let valStr_0 = val_x.toString();  // 数値を文字に変換
     let valStr_1 = valStr_0.replace('.',''); // 小数点なし
     let dotStr = '';
