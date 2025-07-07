@@ -218,10 +218,25 @@
       }  
       if (scrnMode <= 2) {
         Value_1 = parseFloat(strBuff_1); // 引数１に設定
+        let errFlg = ChkRange(Value_1); // 数値の範囲チェック
+        if (errFlg > 0) {
+          showError(errFlg); // エラー表示
+          InitAll();
+          scrnMode=0;
+          return(errFlg);
+        }
       }else{
         Value_2 = parseFloat(strBuff_1); // 引数２に設定
+        let errFlg = ChkRange(Value_1); // 数値の範囲チェック
+        if (errFlg > 0) {
+          showError(errFlg); // エラー表示
+          InitAll();
+          scrnMode=0;
+          return(errFlg);
+        }
       }
-      showVal();  
+      showVal();
+      return(0); // 正常終了  
   }
 
   function showVal(){
@@ -395,7 +410,7 @@
    strBuff = strBuff + '7';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return; 
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -410,7 +425,7 @@
    strBuff = strBuff + '4';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -425,7 +440,7 @@
    strBuff = strBuff + '1';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -440,7 +455,7 @@
    strBuff = strBuff + '0';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -471,7 +486,7 @@
    strBuff = strBuff + '8';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -486,7 +501,7 @@
    strBuff = strBuff + '5';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -501,7 +516,7 @@
    strBuff = strBuff + '2';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -520,7 +535,7 @@
  });  
  buttonElement_SQR.addEventListener('click',() => {
     if (scrnMode ===1 || scrnMode===3) {
-        setBuff(strBuff);
+        if (setBuff(strBuff) >0) return;
         scrnMode++;
     }
     if (scrnMode >= 4) {
@@ -557,7 +572,7 @@
    strBuff = strBuff + '9';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -572,7 +587,7 @@
    strBuff = strBuff + '6';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -587,7 +602,7 @@
    strBuff = strBuff + '3';
    numLen++;
    if ((scrnMode ===1 || scrnMode===3) && (numLen >= 10)){
-      setBuff(strBuff);
+      if (setBuff(strBuff) >0) return;
       if (oprFlg > 0) scrnMode++;
       else scrnMode=0;  // 演算子フラグが立っていない場合はscrnModeを0に戻す
    }else{
@@ -596,7 +611,7 @@
  });  
  buttonElement_PLMI.addEventListener('click',() => {
     if (scrnMode ===1 || scrnMode===3) {
-        setBuff(strBuff);
+        if (setBuff(strBuff) >0) return;
         scrnMode++;
     }
     if (scrnMode >= 4) {
@@ -608,7 +623,7 @@
  });
  buttonElement_DIV.addEventListener('click',() => {
     if (scrnMode ===1 || scrnMode===3) {
-        setBuff(strBuff);
+        if (setBuff(strBuff) >0) return;
     }
     if (scrnMode >=3 ){
         let errFlg=calcVal();
@@ -626,7 +641,7 @@
  });
  buttonElement_MUL.addEventListener('click',() => {
     if (scrnMode ===1 || scrnMode===3) {
-        setBuff(strBuff);
+        if (setBuff(strBuff) >0) return;
     }
     if (scrnMode >=3){
         let errFlg=calcVal();
@@ -644,7 +659,7 @@
 });
  buttonElement_MNS.addEventListener('click',() => {
     if (scrnMode ===1 || scrnMode===3) {
-        setBuff(strBuff);
+        if (setBuff(strBuff) >0) return;
     }
     if (scrnMode >=3){
         let errFlg=calcVal();
@@ -662,7 +677,7 @@
  });
  buttonElement_PLS.addEventListener('click',() => {
      if (scrnMode ===1 || scrnMode===3) {
-        setBuff(strBuff);
+        if (setBuff(strBuff) >0) return;
     }
     if (scrnMode >=3){
         let errFlg=calcVal();
@@ -680,7 +695,7 @@
  });
  buttonElement_EQ.addEventListener('click',() => {
     if (scrnMode ===1 || scrnMode===3) {
-        setBuff(strBuff);
+        if (setBuff(strBuff) >0) return;
     }
     if (oprFlg > 0){
         let errFlg=calcVal();
