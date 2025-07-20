@@ -1,5 +1,30 @@
 'use strict';
 {
+  const url_string = window.location.href;
+  const url_obj = new URL(url_string);
+  const params = url_obj.searchParams;
+  let cvBackGround = '#' + params.get('back');
+  let cvForeGround = '#' + params.get('fore');
+  if (cvBackGround==='#null' || cvForeGround==='#null'){
+    cvBackGround = '#aaa';  // 背景色
+    cvForeGround = '#222';  // 文字色
+  }
+  function InitScreen(){
+    // 画面背景初期化
+    const canvas = document.querySelector('canvas');
+    if (typeof canvas.getContext === 'undefined') {
+      return;
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(canvas.width,0);
+    ctx.lineTo(canvas.width,canvas.height);
+    ctx.lineTo(0,canvas.height);
+    ctx.lineTo.closePath;
+    ctx.fillStyle = cvBackGround;
+    ctx.fill();
+  }
   function DelStr2(strLen,ix,iy) {
     const canvas = document.querySelector('canvas');
     if (typeof canvas.getContext === 'undefined') {
@@ -14,7 +39,7 @@
      ctx.lineTo(ix+(strLen)*55-8, iy+75);
      ctx.lineTo(ix-8, iy+74);
      ctx.lineTo.closePath;
-     ctx.fillStyle = '#aaa';
+     ctx.fillStyle = cvBackGround;
      ctx.fill();
      ctx.beginPath();
      ctx.moveTo(ix-19,iy+64);
@@ -22,7 +47,7 @@
      ctx.lineTo(ix-8, iy+74);
      ctx.lineTo(ix-19, iy+74);
      ctx.lineTo.closePath;
-     ctx.fillStyle = '#aaa';
+     ctx.fillStyle = cvBackGround;
      ctx.fill();
   }
 
@@ -40,7 +65,7 @@
     //  ctx.lineTo(ix+(tgtStr.length)*55-7, iy+75);
     //  ctx.lineTo(ix-7, iy+75);
     //  ctx.lineTo.closePath;
-    //  ctx.fillStyle = '#aaa';
+    //  ctx.fillStyle = cvBackGround;
     //  ctx.fill();
 
     // 文字列描画処理
@@ -83,7 +108,7 @@
     ctx.lineTo(x+23,y+26);
     ctx.lineTo(x+13,y+26);
     ctx.lineTo.closePath;
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = cvForeGround;
     ctx.fill();
     ctx.beginPath();
     ctx.moveTo(x+11,y+48);
@@ -91,7 +116,7 @@
     ctx.lineTo(x+20,y+58);
     ctx.lineTo(x+10,y+58);
     ctx.lineTo.closePath;
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = cvForeGround;
     ctx.fill();
   }
   // Dotの描画
@@ -106,7 +131,7 @@
     ctx.lineTo(x-9,y+74);
     ctx.lineTo(x-19,y+74);
     ctx.lineTo.closePath;
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = cvForeGround;
     ctx.fill();
   }
     // マイナスの描画
@@ -185,7 +210,7 @@
     ctx.lineTo(ix+25,iy+5);
     ctx.lineTo(ix+5,iy+5);
     ctx.lineTo.closePath;
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = cvForeGround;
     ctx.fill();
   } 
   function drawVSeg(ctx,ix,iy) {
@@ -197,7 +222,7 @@
     ctx.lineTo(ix-7,iy+25);
     ctx.lineTo(ix-5,iy+5);
     ctx.lineTo.closePath;
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = cvForeGround;
     ctx.fill();
   } 
   
@@ -208,9 +233,13 @@
   var Value_1 = 0;  // 引数１
   var Value_2 = 0;        // 引数２
   var oprFlg = 0;         // 演算子フラグ（なし、加、減、乗、除）
+  var oprFlgNew = 0; // セッション内演算子入力の有無
   
   function setBuff(){
       var strBuff_1 = '';
+      if (strBuff.length === 0) {
+        strBuff = '0';
+      }
       if (dotpos >=0){
         strBuff_1= strBuff.substring(0,dotpos) + '.' + strBuff.substring(dotpos,strBuff.length);
       }else{
@@ -360,7 +389,7 @@
     if (Val_0 <= -1e+9 || Val_0 >= 1e+10) {
       return(1); 
     }
-    if (Val_0 < 1e-9 && Val_0 > -1e-8) {
+    if (Val_0 !== 0 && Val_0 < 1e-9 && Val_0 > -1e-8) {
       return(2);
     }
     if ((Val_0.toString().indexOf('e') >= 0) || (Val_0.toString().indexOf('E') >= 0)) {
@@ -395,17 +424,20 @@
   const buttonElement_PLS = document.getElementById('btn_PLS');      
   const buttonElement_EQ  = document.getElementById('btn_EQ');      
 
+  InitScreen();
   showVal();
 
  buttonElement_C.addEventListener('click',() => {
     InitAll(); // 全ての変数を初期化
     showVal();
     scrnMode = 0;
+    oprFlgNew = 0; // セッション内演算子入力有無クリア
  });  
  buttonElement_7.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '7';
    numLen++;
@@ -420,7 +452,8 @@
  buttonElement_4.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '4';
    numLen++;
@@ -435,7 +468,8 @@
  buttonElement_1.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '1';
    numLen++;
@@ -450,7 +484,8 @@
  buttonElement_0.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '0';
    numLen++;
@@ -481,7 +516,8 @@
  buttonElement_8.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '8';
    numLen++;
@@ -496,7 +532,8 @@
  buttonElement_5.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '5';
    numLen++;
@@ -511,7 +548,8 @@
  buttonElement_2.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '2';
    numLen++;
@@ -526,7 +564,8 @@
  buttonElement_DOT.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    if (dotpos < 0){
       dotpos = numLen;
@@ -567,7 +606,8 @@
  buttonElement_9.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '9';
    numLen++;
@@ -582,7 +622,8 @@
  buttonElement_6.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '6';
    numLen++;
@@ -597,7 +638,8 @@
  buttonElement_3.addEventListener('click',() => {
    if (scrnMode === 0 || scrnMode === 2){
       InitBuff();
-      scrnMode++;
+      if (oprFlgNew===1)  scrnMode=3; 
+      else  scrnMode=1;
    }
    strBuff = strBuff + '3';
    numLen++;
@@ -622,6 +664,7 @@
     showVal();
  });
  buttonElement_DIV.addEventListener('click',() => {
+    oprFlgNew = 1; // セッション内演算子入力有
     if (scrnMode ===1 || scrnMode===3) {
         if (setBuff(strBuff) >0) return;
     }
@@ -640,6 +683,7 @@
     oprFlg=4; // 除算
  });
  buttonElement_MUL.addEventListener('click',() => {
+    oprFlgNew = 1; // セッション内演算子入力有
     if (scrnMode ===1 || scrnMode===3) {
         if (setBuff(strBuff) >0) return;
     }
@@ -658,6 +702,7 @@
     oprFlg=3;  // 乗算
 });
  buttonElement_MNS.addEventListener('click',() => {
+    oprFlgNew = 1; // セッション内演算子入力有
     if (scrnMode ===1 || scrnMode===3) {
         if (setBuff(strBuff) >0) return;
     }
@@ -676,7 +721,8 @@
     oprFlg=2; // 減算
  });
  buttonElement_PLS.addEventListener('click',() => {
-     if (scrnMode ===1 || scrnMode===3) {
+    oprFlgNew = 1; // セッション内演算子入力有
+    if (scrnMode ===1 || scrnMode===3) {
         if (setBuff(strBuff) >0) return;
     }
     if (scrnMode >=3){
@@ -694,6 +740,7 @@
     oprFlg=1; // 加算
  });
  buttonElement_EQ.addEventListener('click',() => {
+    oprFlgNew = 0; // セッション内演算子入力有無クリア
     if (scrnMode ===1 || scrnMode===3) {
         if (setBuff(strBuff) >0) return;
     }
